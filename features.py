@@ -13,6 +13,12 @@ from nltk.tokenize import word_tokenize
 from numpy import mean, zeros
 
 import utils
+from nltk.corpus import cmudict
+import syllapy
+# import nltk
+# # nltk.download('cmudict')
+
+cmu_dict = cmudict.dict() 
 
 RT = "./"
 BROWNCLUSFILE = RT + "model/resources/browncluster.txt"
@@ -23,6 +29,17 @@ NEGATIVE = RT + "model/resources/negative-words.txt"
 # default name entities.
 NER_title = {'ORGANIZATION': 0, "PERCENT": 1, 'PERSON': 2, 'DATE': 3,
              'MONEY': 4, 'TIME': 5, 'LOCATION': 6}
+
+
+personal_deixis_words = ["i", "me", "my", "mine", "you", "your","yours", "he", "she", "her", "hers", "his", "him", "it", "its", "we",
+                         "our", "ours", "us", "they", "them", "their", "theirs"]
+
+temporal_deixis_words = ["then", "now", "today", "yesterday", "tomorrow", "soon", "later", "ago", "before", "after", "next", "last", "recently",
+                            "currently", "previously", "during", "since"]
+
+spatial_deixis_words = ["here", "there", "nearby", "far", "outside", "away", "leave", "enter", "exit", "approach", "depart",
+                        "behind", "below", "in", "beside",
+                        "that", "these", "those"]
 
 
 class RawSent:
@@ -61,7 +78,8 @@ def extractPOS(sentlst):
 
     print("already has the file, start tagging ...")
 
-    subprocess.call(['./extractPostag.sh'])
+    #subprocess.call(['./extractPostag.sh'])
+    subprocess.call(['extractPostag.bat'], shell=True)
     print("Successfully covert pos-tags")
 
     with open("sample-tagged.txt", "r", encoding="utf-8") as f:
@@ -149,6 +167,7 @@ def NE_Concrete_Emo(sentlst):
         "./model/resources/stanford-ner.jar", encoding='utf-8')
 
     big_matrix = []
+    lst_len = len(sentlst)
     for index, line in enumerate(sentlst):
 
         tokens = word_tokenize(line.getStr())
@@ -156,6 +175,7 @@ def NE_Concrete_Emo(sentlst):
         concrete = []
         tagger = st.tag(tokens)
 
+        print(f'# Do the concrete count. {index}/{lst_len - 1}')
         # Do the concrete count.
         for word, tag in tagger:
             if tag in NER_title:
@@ -282,6 +302,46 @@ def numCapLetters(sentlst, normalize=True):
         v = len([x for x in t.getStr() if x.isupper()])
         ret.append((v + 0.0) / t.getNumTokens() if normalize else v)
     return ret
+
+
+def numPersonalDeixis(sentlst, normalize=True):
+    ret = []
+    for t in sentlst:
+        v = len([x for x in t.getTokens() if x.lower() in personal_deixis_words])
+        ret.append((v + 0.0) / t.getNumTokens() if normalize else v)
+    return ret
+
+def numTemporalDeixis(sentlst, normalize=True):
+    ret = []
+    for t in sentlst:
+        v = len([x for x in t.getTokens() if x.lower() in temporal_deixis_words])
+        ret.append((v + 0.0) / t.getNumTokens() if normalize else v)
+    return ret
+
+def numSpatialDeixis(sentlst, normalize=True):
+    ret = []
+    for t in sentlst:
+        v = len([x for x in t.getTokens() if x.lower() in spatial_deixis_words])
+        ret.append((v + 0.0) / t.getNumTokens() if normalize else v)
+    return ret
+
+
+def get_syllable_count(sentlst):
+    ret = []
+    for t in sentlst:
+        syllable_count = sum(word_syllable_count(word) for word in t.getTokens())
+        normalized_syllable_count = syllable_count / t.getNumTokens()
+        ret.append(normalized_syllable_count)
+    return ret
+
+
+def word_syllable_count(word):
+    try:
+        return [len(list(y for y in x if y[-1].isdigit())) for x in cmu_dict[word.lower()]][0]
+    except KeyError:
+        #if word not found in cmudict
+        return syllapy.count(word)
+
 
 
 def numUsers(sentlst):

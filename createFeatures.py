@@ -43,19 +43,22 @@ class ModelNewText(object):
         original_df = pd.read_csv(filename, encoding='utf-8', sep="\t")
         print(original_df.shape)
 
-        ### given userID. Will be deleted in the final version.
-        self.userid = list(original_df.loc[:, 'user_id'])
+        # ### given userID. Will be deleted in the final version.
+        # self.userid = list(original_df.loc[:, 'user_id'])
 
-        try:
-            self.time = [int(y.split()[-1]) for y in
-                         list(original_df.loc[:, 'time'])]
-            self.tweetid = list(original_df.loc[:, 'tweet_id'])
-            self.testLabels = list(original_df.loc[:, 'Score'])
-        except KeyError:
-            pass
+        # try:
+        #     self.time = [int(y.split()[-1]) for y in
+        #                  list(original_df.loc[:, 'time'])]
+        #     self.tweetid = list(original_df.loc[:, 'tweet_id'])
+        #     self.testLabels = list(original_df.loc[:, 'Score'])
+        # except KeyError:
+        #     pass
+
+        # self.test = [features.ParseText(y) for y in
+        #              list(original_df.loc[:, 'text'])]
 
         self.test = [features.ParseText(y) for y in
-                     list(original_df.loc[:, 'text'])]
+                     list(original_df.loc[:, 'Tweet'])]
 
     def loadFromFile(self, filename):
         self.test = []
@@ -163,6 +166,10 @@ class ModelNewText(object):
         self.fPostag()
         self.NE_Concrete()
 
+        #added syllable_count
+        recs = [features.RawSent(r) for r in self.test]
+        self._add_feature("syllable_count", features.get_syllable_count(recs))
+
     # Distributional word representations
     def transEmbedding(self):
         self.fNeuralVec()
@@ -181,6 +188,15 @@ class ModelNewText(object):
             self._add_feature("Negative", file.loc[:, 'Negative'])
             self._add_feature("Positive", file.loc[:, 'Positive'])
 
+    
+    def transDeixisFeature(self):
+        normalize = True
+        recs = [features.RawSent(r) for r in self.test]
+        self._add_feature("personalDeixis", features.numPersonalDeixis(recs, normalize))
+        self._add_feature("tmpDeixis", features.numTemporalDeixis(recs, normalize))
+        self._add_feature("spatialDeixis", features.numSpatialDeixis(recs, normalize))
+
+
     # def transformTweet(self):
     # 	recs = [features.RawSent(r) for r in self.test]
     # 	self._add_feature("numurl",features.numUrl(recs))
@@ -197,5 +213,5 @@ class ModelNewText(object):
         for feature in self.featurestest.keys():
             df[feature] = self.featurestest[feature]
         # print(len(self.feature))
-        df.to_csv("./output/test.csv", sep='\t')
+        df.to_csv("./output/test.tsv", sep='\t')
         print("DOne")

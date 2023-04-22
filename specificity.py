@@ -1,7 +1,7 @@
 import argparse
 import pickle
 import sys
-import os
+import os, time
 from createFeatures import *
 
 MODELFILE = "./model/best_model.pkl"
@@ -20,10 +20,12 @@ def getFeatures(fin):
     ## When use our data.
     # a.loadFromCSV(fin)
 
-    a.loadFromFile(fin)
+    #a.loadFromFile(fin)
+    a.loadFromTSV(fin)
     a.transLexical()
     a.transEmbedding()
     a.transEmotionFeature()
+    a.transDeixisFeature()
     a.transform_features()
 
 
@@ -69,7 +71,33 @@ def clean():
     os.remove("USEFUL_TAG.csv")
 
 
+def test():
+    import nltk
+    from nltk.util import ngrams
+
+    from sklearn.feature_extraction.text import CountVectorizer
+
+    # Example tweet text
+    tweet = 'Hoping there is no #Caddyshack moment in the #Olympics2016 pool ! #BabyRuth #DOODIE'
+
+    # Define the n-gram range
+    ngram_range = (2, 3)  # Example: representing bigrams and trigrams
+
+    # Initialize CountVectorizer with desired n-gram range
+    vectorizer = CountVectorizer(ngram_range=ngram_range)
+
+    # Fit and transform the tweet text to obtain n-gram features
+    ngram_features = vectorizer.fit_transform([tweet])
+
+    # Convert the sparse matrix to an array
+    ngram_features_array = ngram_features.toarray()
+
+    # Print the n-gram features
+    print(ngram_features_array)
+
 if __name__ == "__main__":
+    # Start the timer
+    start_time = time.time()
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--inputfile",
                            help="input raw text file, one sentence per line, tokenized",
@@ -81,5 +109,12 @@ if __name__ == "__main__":
         "Predictor: please make sure that your input sentences are WORD-TOKENIZED for better prediction.\n")
     args = argparser.parse_args()
     getFeatures(args.inputfile)
-    preds = predict(model=MODELFILE)
-    writeSpecificity(preds, args.outputfile)
+    clean()
+
+    end_time = time.time()
+    time_taken = end_time - start_time
+    print("Time taken: {:.2f} seconds".format(time_taken))
+
+    # test()
+    # preds = predict(model=MODELFILE)
+    # writeSpecificity(preds, args.outputfile)
