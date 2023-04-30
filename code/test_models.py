@@ -146,7 +146,7 @@ if __name__ == "__main__":
     # value_counts = df_scores_all.value_counts()
     # scores = df_scores_all.values
 
-    # plt.hist(scores, bins=30, edgecolor='black', linewidth=0.5)
+    # plt.hist(scores, bins=30, edgecolor='black', linewidth=0.5, label='Actual Scores')
     # plt.xlabel('Score')
     # plt.ylabel('Count')
     # plt.xticks(fontsize=8)
@@ -227,18 +227,21 @@ if __name__ == "__main__":
     ## RF
     #print('******** Random Forest ********')
     #best_n_estimators, best_max_depth, best_max_features = tune_random_forest_model(df_train_val, train_val_scores)
-    # best_n_estimators = 200 
-    # best_max_depth = 20
-    # mae, y_predict = random_forest_model(df_train_val, train_val_scores, df_test, test_scores, best_n_estimators, best_max_depth)
+    best_n_estimators = 200 
+    best_max_depth = 20
+    mae, y_predict = random_forest_model(df_train_val, train_val_scores, df_test, test_scores, best_n_estimators, best_max_depth)
 
-    # plt.hist(y_predict, bins=30, edgecolor='black', linewidth=0.5)
-    # plt.xlabel('Score')
-    # plt.ylabel('Count')
-    # plt.xticks(fontsize=8)
-    # plt.yticks(fontsize=8)
-    # plt.xlim(1.0, 5.0)
+    plt.hist(test_scores, bins=30, edgecolor='black', linewidth=0.5, alpha=0.5, label='Actual Scores')
+    plt.hist(y_predict, bins=30, edgecolor='black', alpha=0.5, linewidth=0.5, label='RF Predicted Scores')
+    plt.xlabel('Score')
+    plt.ylabel('Count')
+    plt.xticks(fontsize=8)
+    plt.yticks(fontsize=8)
+    plt.xlim(1.0, 5.0)
+    plt.legend(loc='upper right')
     # #plt.show()   
     # plt.savefig('RF_Specificity_frequency_dist.png') 
+    plt.savefig('RF_actual_vs_predict.png')
 
 
     # corr, _ = pearsonr(y_predict, test_scores)
@@ -255,18 +258,20 @@ if __name__ == "__main__":
     ## RBFSVR_model
     # print('******** RBFSVR_model********')
     # #best_C, best_gamma = tune_RBFSVR_model(df_train_val, train_val_scores)
-    best_C = 1
-    best_gamma = 0.01
-    mae, y_predict = RBFSVR_model(df_train_val, train_val_scores, df_test, test_scores, best_C, best_gamma)
+    # best_C = 1
+    # best_gamma = 0.01
+    # mae, y_predict = RBFSVR_model(df_train_val, train_val_scores, df_test, test_scores, best_C, best_gamma)
 
-    plt.hist(y_predict, bins=30, edgecolor='black', linewidth=0.5)
-    plt.xlabel('Score')
-    plt.ylabel('Count')
-    plt.xticks(fontsize=8)
-    plt.yticks(fontsize=8)
-    plt.xlim(1.0, 5.0)
-    #plt.show()   
-    plt.savefig('SVR_Specificity_frequency_dist.png') 
+    # plt.hist(test_scores, bins=30, edgecolor='black', linewidth=0.5, alpha=0.5, label='Actual Scores')
+    # plt.hist(y_predict, bins=30, edgecolor='black', linewidth=0.5, alpha=0.5, label='SVR Predicted Scores')
+    # plt.xlabel('Score')
+    # plt.ylabel('Count')
+    # plt.xticks(fontsize=8)
+    # plt.yticks(fontsize=8)
+    # plt.xlim(1.0, 5.0)
+    # plt.legend(loc='upper right')
+    # #plt.show()   
+    # plt.savefig('SVR_actual_vs_predict.png') 
 
 
     # corr, _ = pearsonr(y_predict, base_test_scores)

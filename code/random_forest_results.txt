@@ -1,0 +1,57 @@
+random forest:
+
+base: mae:0.473	corr:0.465
+
+
+
+All: mae:0.375	corr:0.698
+
+surface and lexical only: mae:0.394	corr:0.666
+
+Emotion only: mae:0.514	corr:0.270
+
+Deixis only: mae:0.503		corr:0.341
+
+Distributional word representations only: mae:0.412	corr:0.606
+
+All - surface and lexical: mae:0.413	corr:0.605
+
+All - Emotionl: mae:0.375	corr:0.699
+
+All - Deixis: mae:0.375		corr:0.699
+
+All - Distributional word representations: mae:0.393	corr:0.668
+
+
+Distributional word representations + surface and lexical only: mae:0.375	corr:0.699
+
+
+
+
+
+
+RBFSVR_model:
+
+base: mae:0.472	corr:0.467
+
+
+All: mae:0.369	corr:0.720
+
+surface and lexical only: mae:0.396	corr:0.662
+
+Emotion only: mae:0.531	corr:0.139
+
+Deixis only: mae:0.527		corr:0.104
+
+Distributional word representations only: mae:0.410	corr:0.606
+
+All - surface and lexical: mae:0.0.410	corr:0.608
+
+All - Emotionl: mae:0.369	corr:0.720
+
+All - Deixis: mae:0.369	corr:0.720
+
+All - Distributional word representations: mae:0.396	corr:0.662
+
+
+Distributional word representations + surface and lexical only: mae:0.375	corr:0.699
